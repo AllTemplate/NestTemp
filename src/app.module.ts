@@ -2,7 +2,9 @@ import config from './config';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { HelloModule } from './module/hello/hello.module';
+import { UserModule } from './module/user/user.module';
+import { ResultTransformInterceptor } from './common/interceptor/result.Interceptor';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -14,7 +16,13 @@ import { HelloModule } from './module/hello/hello.module';
       useFactory: (ConfigService: ConfigService) => ConfigService.get('PostgreSQL'),
       inject: [ConfigService],
     }),
-    HelloModule,
+    UserModule,
+  ],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ResultTransformInterceptor,
+    },
   ],
 })
 export class AppModule {}

@@ -1,26 +1,26 @@
-import { CreateDateColumn, DeleteDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from 'typeorm';
 
 export class BaseEntity {
-  @PrimaryGeneratedColumn('uuid', { comment: '唯一id' })
-  id: string;
-
   @CreateDateColumn({
-    type: 'date',
+    type: 'timestamp',
     name: 'created_at',
+    precision: 0,
     comment: '创建时间',
   })
   createdAt: Date;
 
   @UpdateDateColumn({
-    type: 'date',
+    type: 'timestamp',
     name: 'updated_at',
+    precision: 0,
     comment: '更新时间',
   })
   updatedAt: Date;
 
   @DeleteDateColumn({
-    type: 'date',
+    type: 'timestamp',
     name: 'deleted_at',
+    precision: 0,
     comment: '删除时间',
   })
   deletedAt: Date;

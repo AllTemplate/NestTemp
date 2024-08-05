@@ -1,9 +1,10 @@
-import { Logger, configure } from 'log4js';
+import { Logger, configure, getLogger } from 'log4js';
 import * as path from 'path';
 import { Injectable } from '@nestjs/common';
 @Injectable()
 export class LoggerService {
-  constructor(private readonly logger: Logger) {
+  private readonly logger: Logger;
+  constructor() {
     configure({
       appenders: {
         console: {
@@ -25,7 +26,7 @@ export class LoggerService {
         },
       },
     });
-    // this.log4js = getLogger();
+    this.logger = getLogger();
   }
 
   error(message: string, trace: string) {

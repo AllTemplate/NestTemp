@@ -5,7 +5,10 @@ import { LoggerService } from '../logger';
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
-  constructor(private readonly loggerService: LoggerService) {}
+  private readonly loggerService: LoggerService;
+  constructor() {
+    this.loggerService = new LoggerService();
+  }
 
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
