@@ -12,6 +12,8 @@ export class UserServiceImpl {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
   async getUser(username: string): Promise<UserEntity> {
+    let a: any;
+    console.log(a.x);
     return await this.userRepository.findOne({
       where: {
         username,
@@ -24,8 +26,6 @@ export class UserServiceImpl {
         username: createUserDto.username,
       },
     });
-    let a: any;
-    console.log(a.x);
     if (user) throw new BusinessException('用户已存在');
     return await this.userRepository.save(createUserDto);
   }

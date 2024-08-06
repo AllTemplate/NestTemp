@@ -1,18 +1,27 @@
-import { Logger, configure, getLogger } from 'log4js';
 import * as path from 'path';
+import { Logger, configure, getLogger } from 'log4js';
 import { Injectable } from '@nestjs/common';
 @Injectable()
 export class LoggerService {
-  private readonly logger: Logger;
+  private readonly businessLogger: Logger;
+  private readonly unknownLogger: Logger;
   constructor() {
     configure({
       appenders: {
         console: {
           type: 'console',
         },
-        app: {
+        business: {
           type: 'dateFile',
-          filename: path.resolve('./logs', 'app.log'),
+          filename: path.resolve('./logs', 'business.log'),
+          pattern: 'yyyy-MM-dd',
+          keepFileExt: true,
+          alwaysIncludePattern: true,
+          numBackups: 10,
+        },
+        unknown: {
+          type: 'dateFile',
+          filename: path.resolve('./logs', 'unknown.log'),
           pattern: 'yyyy-MM-dd',
           keepFileExt: true,
           alwaysIncludePattern: true,
@@ -21,21 +30,28 @@ export class LoggerService {
       },
       categories: {
         default: {
-          appenders: ['console', 'app'],
+          appenders: ['console'],
           level: 'info',
+        },
+        business: {
+          appenders: ['console', 'business'],
+          level: 'info',
+        },
+        unknown: {
+          appenders: ['console', 'unknown'],
+          level: 'error',
         },
       },
     });
-    this.logger = getLogger();
+    this.businessLogger = getLogger('business');
+    this.unknownLogger = getLogger('unknown');
   }
 
-  error(message: string, trace: string) {
-    this.logger.error(message, trace);
-  }
-  success(message: string, trace: string) {
-    this.logger.info(message, trace);
-  }
-  fatal(message: string, trace: string) {
-    this.logger.fatal(message, trace);
+  error(message: string, trace: string, type: 'business' | 'unknown') {
+    if (type === 'business') {
+      this.businessLogger.error(message, trace);
+    } else {
+      this.unknownLogger.error(message, trace);
+    }
   }
 }

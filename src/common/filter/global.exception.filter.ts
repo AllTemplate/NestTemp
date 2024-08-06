@@ -1,13 +1,11 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
-import { BaseExceptionFilter } from '@nestjs/core';
 import { Request, Response } from 'express';
 import { LoggerService } from '../logger';
 
 @Catch(Error)
-export class GlobalExceptionFilter extends BaseExceptionFilter implements ExceptionFilter {
+export class GlobalExceptionFilter implements ExceptionFilter {
   private readonly loggerService: LoggerService;
-  constructor(a) {
-    super(a);
+  constructor() {
     this.loggerService = new LoggerService();
   }
 
@@ -18,17 +16,19 @@ export class GlobalExceptionFilter extends BaseExceptionFilter implements Except
     if (exception instanceof Error) {
       return this.catchError(exception, host);
     }
-    // return super.catch(exception, host) // 使用 @Catch() 捕获全部抛出可能运行到此，但是如果不注入 HttpAdapterHost 依赖则 BaseExceptionFilter 会抛异常
   }
 
   catchError(exception: Error, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-
+    const request = ctx.getRequest<Request>();
+    const { method, originalUrl } = request;
     response.status(HttpStatus.BAD_GATEWAY).json({
-      error: 'ERROR!',
+      method,
+      path: request.headers.host + originalUrl,
+      message: exception.message,
     });
-    this.loggerService.error(exception.message, exception.stack);
+    this.loggerService.error(exception.message, exception.stack, 'unknown');
   }
 
   catchHttpException(exception: HttpException, host: ArgumentsHost) {
@@ -36,11 +36,17 @@ export class GlobalExceptionFilter extends BaseExceptionFilter implements Except
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
+    const results = exception.getResponse() as { msg: string; code: number };
+    const { method, body, query, params, ip } = request;
 
-    response.status(status).json({
+    const resData = {
+      code: results.code,
       statusCode: status,
-      timestamp: new Date().toISOString(),
-      path: request.url,
-    });
+      method,
+      path: request.headers.host + request.url,
+      msg: results.msg,
+    };
+    response.status(status).json(resData);
+    this.loggerService.error(JSON.stringify({ ...resData, body, query, params, ip }), 'http', 'business');
   }
 }
