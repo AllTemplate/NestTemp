@@ -12,4 +12,5 @@ export default () => ({
     synchronize: true,
     autoLoadEntities: true,
   } as PostgresConnectionOptions & TypeOrmModuleOptions,
+  JwtSecret: process.env.JWT_SECRET,
 });
