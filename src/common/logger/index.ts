@@ -47,7 +47,7 @@ export class LoggerService {
     this.unknownLogger = getLogger('unknown');
   }
 
-  error(message: string, trace: string, type: 'business' | 'unknown') {
+  error(message: string, trace: string, type: 'business' | 'unknown' = 'unknown') {
     if (type === 'business') {
       this.businessLogger.error(message, trace);
     } else {

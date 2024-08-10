@@ -1,9 +1,10 @@
 import config from './config';
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './module/user/user.module';
 import { AuthModule } from './module/auth/auth.module';
+import { TestModule } from './module/test/test.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -17,6 +18,9 @@ import { AuthModule } from './module/auth/auth.module';
     }),
     UserModule,
     AuthModule,
+    TestModule,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {}
+}

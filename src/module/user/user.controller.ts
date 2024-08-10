@@ -1,18 +1,19 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { CreateUserDto } from './user.dto';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { CreateUserDto, LoginUserDto } from './user.dto';
 import { UserService } from './user.service';
-import { ApiOperation } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { LocalGuard } from '../auth/local.guard';
+import { UserEntity } from './user.entity';
+import { AuthService } from '../auth/auth.service';
+import { JwtGuard } from '../auth/jwt.guard';
 
 @Controller('user')
+@ApiTags('用户')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
-
-  @Get(':username')
-  @ApiOperation({ summary: '根据用户名查找用户' })
-  getUser(@Param('username') username: string) {
-    return this.userService.getUser(username);
-  }
+  constructor(
+    private readonly userService: UserService,
+    private readonly authService: AuthService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: '创建用户' })
@@ -20,10 +21,18 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  @Post('find')
-  @ApiOperation({ summary: '查找' })
-  @UseGuards(AuthGuard('local'))
-  getAllUser() {
-    return this.userService.findAll();
+  @Post('login')
+  @ApiOperation({ summary: '登录' })
+  @UseGuards(LocalGuard)
+  login(@Body() _: LoginUserDto, @Req() req: Request & { user: UserEntity }) {
+    return this.authService.signToken(req.user);
+  }
+
+  @Get()
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @ApiOperation({ summary: '查询用户信息' })
+  getUserProfile(@Req() req: Request & { user: { jwtUser: UserEntity } }) {
+    return req.user.jwtUser.username;
   }
 }

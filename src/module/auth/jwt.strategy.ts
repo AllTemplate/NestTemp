@@ -3,6 +3,7 @@ import { Strategy, StrategyOptions, ExtractJwt } from 'passport-jwt';
 import { AuthModuleOptions, PassportStrategy } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
+import { UserEntity } from '../user/user.entity';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -22,12 +23,11 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  async validate(userId: string): Promise<boolean> {
-    console.log('进入jwt策略', userId);
-    const user = await this.authService.validateTokenJwtStrategy(userId);
-    if (!user) {
-      return false;
-    }
-    return true;
+  async validate(user: UserEntity): Promise<{ jwtUser: UserEntity }> {
+    console.log('进入jwt策略', user);
+    const validateUser = await this.authService.validateTokenJwtStrategy(user.userId);
+    return {
+      jwtUser: validateUser,
+    };
   }
 }

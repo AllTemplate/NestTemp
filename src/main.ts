@@ -1,7 +1,7 @@
-import createSwagger from './swagger';
+import createSwagger from './common/swagger';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { logger, runtime } from './runtime';
+import { logger, runtime } from './common/runtime';
 import { ResultTransformInterceptor } from './common/interceptor/result.Interceptor';
 import { ValidationPipe } from '@nestjs/common';
 import { GlobalExceptionFilter } from './common/filter/global.exception.filter';
