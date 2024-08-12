@@ -11,6 +11,7 @@ export class UserService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
   ) {}
+
   async getUser(username: string): Promise<UserEntity> {
     let a: any;
     console.log(a.x);
