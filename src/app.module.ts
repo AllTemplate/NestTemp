@@ -1,10 +1,14 @@
 import config from './config';
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './module/user/user.module';
 import { AuthModule } from './module/auth/auth.module';
 import { TestModule } from './module/test/test.module';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { ResultTransformInterceptor } from './common/interceptor/result.Interceptor';
+import { GlobalExceptionFilter } from './common/filter/global.exception.filter';
+import { JwtAuthGuard } from './common/guard/jwt.guard';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -19,6 +23,12 @@ import { TestModule } from './module/test/test.module';
     UserModule,
     AuthModule,
     TestModule,
+  ],
+  providers: [
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_INTERCEPTOR, useClass: ResultTransformInterceptor },
+    { provide: APP_PIPE, useClass: ValidationPipe },
+    { provide: APP_FILTER, useClass: GlobalExceptionFilter },
   ],
 })
 export class AppModule {

@@ -1,5 +1,5 @@
-import * as path from 'path';
 import { Logger, configure, getLogger } from 'log4js';
+import * as path from 'path';
 import { Injectable } from '@nestjs/common';
 @Injectable()
 export class LoggerService {
@@ -47,7 +47,7 @@ export class LoggerService {
     this.unknownLogger = getLogger('unknown');
   }
 
-  error(message: string, trace: string, type: 'business' | 'unknown' = 'unknown') {
+  error(message: string, trace: string, type: 'business' | 'unknown') {
     if (type === 'business') {
       this.businessLogger.error(message, trace);
     } else {

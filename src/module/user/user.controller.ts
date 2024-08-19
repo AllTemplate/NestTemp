@@ -5,7 +5,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LocalGuard } from '../auth/local.guard';
 import { UserEntity } from './user.entity';
 import { AuthService } from '../auth/auth.service';
-import { JwtGuard } from '../auth/jwt.guard';
+import { IsPublic } from 'src/common/decorator';
 
 @Controller('user')
 @ApiTags('用户')
@@ -24,13 +24,13 @@ export class UserController {
   @Post('login')
   @ApiOperation({ summary: '登录' })
   @UseGuards(LocalGuard)
+  @IsPublic()
   login(@Body() _: LoginUserDto, @Req() req: Request & { user: UserEntity }) {
     return this.authService.signToken(req.user);
   }
 
   @Get()
   @ApiBearerAuth()
-  @UseGuards(JwtGuard)
   @ApiOperation({ summary: '查询用户信息' })
   getUserProfile(@Req() req: Request & { user: { jwtUser: UserEntity } }) {
     return req.user.jwtUser.username;
