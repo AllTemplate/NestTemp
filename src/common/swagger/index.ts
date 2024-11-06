@@ -1,9 +1,22 @@
+import { adminModuleList } from '@/module/admin/module/admin.module';
+import { clientModuleList } from '@/module/client/module/client.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { knife4jSetup } from 'nestjs-knife4j2';
+import config from '@/config';
 
-const swaggerOptions = new DocumentBuilder()
+const adminOptions = new DocumentBuilder()
   .setTitle('nest api for swagger')
-  .setDescription('搭配swagger构建nest应用')
+  .setDescription('管理端')
+  .setVersion('1.0')
+  .addBearerAuth({
+    type: 'http',
+    in: 'headers',
+    name: 'authorization',
+  })
+  .build();
+
+const consumerOptions = new DocumentBuilder()
+  .setTitle('nest api for swagger')
+  .setDescription('客户端端')
   .setVersion('1.0')
   .addBearerAuth({
     type: 'http',
@@ -13,16 +26,14 @@ const swaggerOptions = new DocumentBuilder()
   .build();
 
 const createSwagger = (app) => {
-  const entrance = 'swagger'
-  const document = SwaggerModule.createDocument(app, swaggerOptions);
-  SwaggerModule.setup(entrance, app, document);
-  knife4jSetup(app, [
-    {
-      name: '3.X版本',
-      url: `${entrance}-json`,
-      swaggerVersion: '3.0',
-      location: `${entrance}-json`,
-    },
-  ]);
+  const { ClientSwaggerEntrance, AdminSwaggerEntrance } = config();
+  const adminDocument = SwaggerModule.createDocument(app, adminOptions, {
+    include: [...adminModuleList],
+  });
+  const clientDocument = SwaggerModule.createDocument(app, consumerOptions, {
+    include: [...clientModuleList],
+  });
+  SwaggerModule.setup(AdminSwaggerEntrance, app, adminDocument);
+  SwaggerModule.setup(ClientSwaggerEntrance, app, clientDocument);
 };
 export default createSwagger;

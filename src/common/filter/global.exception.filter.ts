@@ -23,10 +23,11 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
     const { method, originalUrl } = request;
-    response.status(HttpStatus.BAD_GATEWAY).json({
+    response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       method,
       path: request.headers.host + originalUrl,
       message: exception.message,
+      status: false,
     });
     this.loggerService.error(exception.message, exception.stack, 'unknown');
   }

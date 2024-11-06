@@ -5,7 +5,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LocalGuard } from '../auth/local.guard';
 import { UserEntity } from './user.entity';
 import { AuthService } from '../auth/auth.service';
-import { IsPublic } from 'src/common/decorator';
+import { isClientPublic } from '@/common/decorator/client';
 
 @Controller('user')
 @ApiTags('用户')
@@ -24,7 +24,7 @@ export class UserController {
   @Post('login')
   @ApiOperation({ summary: '登录' })
   @UseGuards(LocalGuard)
-  @IsPublic()
+  @isClientPublic()
   login(@Body() _: LoginUserDto, @Req() req: Request & { user: UserEntity }) {
     return this.authService.signToken(req.user);
   }

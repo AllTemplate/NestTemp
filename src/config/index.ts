@@ -1,16 +1,8 @@
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
+import { PostgreSQLConfig } from './postgres';
 
 export default () => ({
-  PostgreSQL: {
-    type: 'postgres',
-    username: 'root',
-    password: '123456',
-    host: 'localhost',
-    port: 5432,
-    database: 'postgres',
-    synchronize: true,
-    autoLoadEntities: true,
-  } as PostgresConnectionOptions & TypeOrmModuleOptions,
-  JwtSecret: process.env.JWT_SECRET,
+  PostgreSQL: PostgreSQLConfig,
+  ClientJwtSecret: process.env.CLIENT_JWT_SECRET,
+  AdminSwaggerEntrance: 'swagger/admin',
+  ClientSwaggerEntrance: 'swagger/client',
 });

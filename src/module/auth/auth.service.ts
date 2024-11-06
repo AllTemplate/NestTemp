@@ -40,7 +40,7 @@ export class AuthService {
     const token = this.jwtService.sign(
       { ...user },
       {
-        secret: this.configService.get('JwtSecret'),
+        secret: this.configService.get('ClientJwtSecret'),
       },
     );
     return token;

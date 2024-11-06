@@ -1,0 +1,1 @@
+export const CLIENT_JWT_AUTH_KEY = 'CLIENT_JWT_AUTH_KEY';
