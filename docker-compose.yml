@@ -1,11 +1,11 @@
 version: '3'
 services:
   postgres:
-    container_name: PostgreSql_temp
+    container_name: ZhongYao_PostgreSql
     image: postgres
     restart: always
     env_file:
-      - env/.env.development
+      - .env.development
     environment:
       - TZ=Asia/Shanghai
       - POSTGRES_USER=${POSTGRES_USER}
@@ -13,13 +13,14 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
     ports:
       - '${POSTGRES_PORT}:5432'
-  # redis:
-  #   container_name: know_redis
-  #   image: redis:latest
-  #   env_file:
-  #     - env/.env.development
-  #   environment:
-  #     - REDIS_PASSWORD=${REDIS_PASSWORD}
-  #   ports:
-  #     - '${REDIS_PORT}:6379'
-  #   command: ['redis-server', '--requirepass', $REDIS_PASSWORD]
+
+  redis:
+    container_name: ZhongYao_redis
+    image: redis:latest
+    env_file:
+      - .env.development
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    ports:
+      - '${REDIS_PORT}:6379'
+    command: ['redis-server', '--requirepass', $REDIS_PASSWORD]

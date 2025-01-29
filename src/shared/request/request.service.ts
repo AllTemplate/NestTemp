@@ -1,12 +1,12 @@
 import { HttpService } from '@nestjs/axios';
 import { HttpException, Injectable } from '@nestjs/common';
 import { catchError, lastValueFrom, map, throwError } from 'rxjs';
-
+import { AxiosRequestConfig } from 'axios';
 @Injectable()
 export class RequestService {
-  constructor(private readonly httpService: HttpService) {}
+  constructor(private readonly httpService: HttpService) { }
 
-  async request<T>(config) {
+  async request<T>(config: AxiosRequestConfig) {
     return await lastValueFrom(
       this.httpService.request<T>(config).pipe(
         map((response) => response.data),

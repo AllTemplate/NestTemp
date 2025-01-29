@@ -21,33 +21,33 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   catchError(exception: Error, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest<Request>();
+    const request = ctx.getRequest<Request & { user: any }>();
     const { method, originalUrl } = request;
-    response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+    response.status(HttpStatus.BAD_GATEWAY).json({
       method,
       path: request.headers.host + originalUrl,
       message: exception.message,
-      status: false,
+      success: false,
     });
-    this.loggerService.error(exception.message, exception.stack, 'unknown');
+    this.loggerService.error(JSON.stringify({ message: exception.message, account: request?.user }), exception.stack, 'unknown');
   }
 
   catchHttpException(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest<Request>();
-    const status = exception.getStatus();
-    const results = exception.getResponse() as { msg: string; code: number };
+    const request = ctx.getRequest<Request & { user: any }>();
+    const statusCode = exception.getStatus();
+    const results = exception.getResponse() as { message: string; code: number };
     const { method, body, query, params, ip } = request;
-
     const resData = {
       code: results.code,
-      statusCode: status,
+      statusCode,
       method,
       path: request.headers.host + request.url,
-      msg: results.msg,
+      message: results.message,
+      success: false,
     };
-    response.status(status).json(resData);
-    this.loggerService.error(JSON.stringify({ ...resData, body, query, params, ip }), 'http', 'business');
+    response.status(statusCode).json(resData);
+    this.loggerService.error(JSON.stringify({ ...resData, body, query, params, ip, account: request?.user }), 'http', 'business');
   }
 }

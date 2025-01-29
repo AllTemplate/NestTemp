@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, HttpStatus, Injectable } from '@nestjs/c
 import { Reflector } from '@nestjs/core';
 import { BusinessException } from '../filter/result';
 import { AuthGuard } from '@nestjs/passport';
-import { ADMIN_JWT_AUTH_KEY } from './constant/admin.constant';
+import { ADMIN_JWT_AUTH_KEY } from '../constant/admin.constant';
 import { ADMIN_NO_AUTH_KEY } from '../decorator/admin';
 
 @Injectable()

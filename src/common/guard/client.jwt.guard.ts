@@ -3,11 +3,10 @@ import { AuthGuard } from '@nestjs/passport';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { BusinessException } from '../filter/result';
-import { CLIENT_JWT_AUTH_KEY } from './constant/client.constant';
 import { CLIENT_NO_AUTH_KEY } from '../decorator/client';
 
 @Injectable()
-export class ClientAuthGuard extends AuthGuard(CLIENT_JWT_AUTH_KEY) implements CanActivate {
+export class ClientJwtAuthGuard extends AuthGuard(CLIENT_NO_AUTH_KEY) implements CanActivate {
   constructor(private readonly reflector: Reflector) {
     super(reflector);
   }
@@ -18,7 +17,7 @@ export class ClientAuthGuard extends AuthGuard(CLIENT_JWT_AUTH_KEY) implements C
     const request = context.switchToHttp().getRequest();
     const { authorization } = request.headers;
     if (!authorization) {
-      throw new BusinessException('权限不足', HttpStatus.UNAUTHORIZED);
+      throw new BusinessException('客户端没有权限', HttpStatus.UNAUTHORIZED);
     } else {
       return super.canActivate(context);
     }

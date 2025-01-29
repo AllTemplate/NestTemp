@@ -1,16 +1,24 @@
 import { Logger, configure, getLogger } from 'log4js';
-import { Injectable } from '@nestjs/common';
 import * as path from 'path';
+import { Injectable } from '@nestjs/common';
 @Injectable()
 export class LoggerService {
   private readonly businessLogger: Logger;
   private readonly unknownLogger: Logger;
-  private readonly infoLogger: Logger;
+  private readonly timedLogger: Logger;
   constructor() {
     configure({
       appenders: {
         console: {
           type: 'console',
+        },
+        time: {
+          type: 'dateFile',
+          filename: path.resolve('./logs', 'timed.log'),
+          pattern: 'yyyy-MM-dd',
+          keepFileExt: true,
+          alwaysIncludePattern: true,
+          numBackups: 10,
         },
         business: {
           type: 'dateFile',
@@ -28,18 +36,14 @@ export class LoggerService {
           alwaysIncludePattern: true,
           numBackups: 10,
         },
-        info: {
-          type: 'dateFile',
-          filename: path.resolve('./logs', 'info.log'),
-          pattern: 'yyyy-MM-dd',
-          keepFileExt: true,
-          alwaysIncludePattern: true,
-          numBackups: 10,
-        },
       },
       categories: {
         default: {
           appenders: ['console'],
+          level: 'info',
+        },
+        time: {
+          appenders: ['console', 'time'],
           level: 'info',
         },
         business: {
@@ -50,15 +54,11 @@ export class LoggerService {
           appenders: ['console', 'unknown'],
           level: 'error',
         },
-        info: {
-          appenders: ['console', 'info'],
-          level: 'info',
-        },
       },
     });
     this.businessLogger = getLogger('business');
     this.unknownLogger = getLogger('unknown');
-    this.infoLogger = getLogger('info');
+    this.timedLogger = getLogger('time');
   }
 
   error(message: string, trace: string, type: 'business' | 'unknown') {
@@ -68,7 +68,8 @@ export class LoggerService {
       this.unknownLogger.error(message, trace);
     }
   }
+
   info(message: string, trace: string) {
-    this.infoLogger.info(message, trace);
+    this.timedLogger.info(message, trace);
   }
 }
